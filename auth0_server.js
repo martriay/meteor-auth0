@@ -33,6 +33,7 @@ if (Meteor.release) {
 var getTokens = function (query) {
   var config = getConfiguration();
   var response;
+
   try {
 
     response = HTTP.post(
@@ -47,7 +48,16 @@ var getTokens = function (query) {
           client_id:      config.clientId,
           client_secret:  config.clientSecret,
           grant_type:     'authorization_code',
-          redirect_uri:   Meteor.absoluteUrl('_oauth/auth0')
+          redirect_uri:   (function(baseUrl) {
+            var suffix = '_oauth/auth0?close';
+
+            if (baseUrl) {
+              var separator = baseUrl.slice(-1) === '/' ? '' : '/';
+              return baseUrl + separator + suffix;
+            } else {
+              return Meteor.absoluteUrl(suffix);
+            }
+          })(config.baseUrl)
         }
       });
   }

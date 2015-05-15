@@ -22,7 +22,18 @@ Auth0.requestCredential = function (options, credentialRequestCompleteCallback) 
   options = options || {};
   options.response_type = options.response_type || 'code';
   options.client_id = config.clientId;
-  options.redirect_uri = Meteor.absoluteUrl('_oauth/auth0?close');
+
+  options.redirect_uri = (function(baseUrl) {
+    var suffix = '_oauth/auth0?close';
+
+    if (baseUrl) {
+      var separator = baseUrl.slice(-1) === '/' ? '' : '/';
+      return baseUrl + separator + suffix;
+    } else {
+      return Meteor.absoluteUrl(suffix);
+    }
+  })(config.baseUrl);
+
   options.state = Random.id();
 
   var loginUrl = 'https://' + config.domain + '/authorize?';
@@ -32,10 +43,11 @@ Auth0.requestCredential = function (options, credentialRequestCompleteCallback) 
   }
 
   options.popupOptions = options.popupOptions || {};
-  var popupOptions = { 
-    width:  options.popupOptions.width || 320, 
+  var popupOptions = {
+    width:  options.popupOptions.width || 320,
     height: options.popupOptions.height || 450
   };
 
   Oauth.initiateLogin(options.state, loginUrl, credentialRequestCompleteCallback, popupOptions);
 };
+
