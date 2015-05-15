@@ -49,7 +49,7 @@ var getTokens = function (query) {
           client_secret:  config.clientSecret,
           grant_type:     'authorization_code',
           redirect_uri:   (function(baseUrl) {
-            var suffix = '_oauth/auth0?close';
+            var suffix = '_oauth/auth0';
 
             if (baseUrl) {
               var separator = baseUrl.slice(-1) === '/' ? '' : '/';
